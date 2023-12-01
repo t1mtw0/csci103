@@ -1,0 +1,87 @@
+#include "bmplib.h"
+#include "cimage.h"
+#include <cstdlib>
+#include <deque>
+#include <fstream>
+#include <iostream>
+#include <vector>
+
+int main(int argc, char *argv[]) {
+    if (argc < 2) {
+        std::cout
+            << "Usage ./compedit in_img_filename <debug-level debug-options>\n";
+        return 1;
+    }
+
+    // ===================
+    CImage img1(argv[1]);
+
+    // ===================
+    // TO DO: call findComponents
+    img1.findComponents();
+    // ===================
+    // Complete - Do not alter
+    //   Debug options for testing
+    if (argc >= 3) {
+        int debug = 0;
+        debug = atoi(argv[2]);
+        if (debug == 1) {
+            // Complete - Do not alter
+            img1.printComponents();
+        } else if (debug == 2 || debug == 3) {
+            // Complete - Do not alter
+            if (argc < 4) {
+                std::cout
+                    << "Please provide an extra argument of the filename to "
+                       "save the image."
+                    << std::endl;
+            } else if (debug == 2) {
+                img1.labelToRGB(argv[3]);
+            } else if (debug == 3) {
+                img1.drawBoundingBoxesAndSave(argv[3]);
+            }
+        }
+        return 0;
+    }
+
+    // ===================
+    // Complete - Review for your own understanding
+    char option;
+    int cid;
+    bool again = true;
+    do {
+        img1.printComponents();
+        std::cout << "\nEnter a command [t,f,b,s,q]: " << std::endl;
+        std::cin >> option;
+        if (option == 't') {
+            int nr, nc;
+            std::cin >> cid >> nr >> nc;
+            if (std::cin.fail()) {
+                break;
+            }
+            img1.translate(cid, nr, nc);
+        } else if (option == 'f' || option == 'b') {
+            int delta;
+            std::cin >> cid >> delta;
+            if (std::cin.fail()) {
+                break;
+            }
+            if (option == 'f') {
+                img1.forward(cid, delta);
+            } else {
+                img1.backward(cid, delta);
+            }
+        } else if (option == 's') {
+            std::string filename;
+            std::cin >> filename;
+            img1.save(filename.c_str());
+        } else {
+            again = false;
+        }
+    } while (again);
+
+    // ===================
+    // If necessary, add any cleanup code
+
+    return 0;
+}
